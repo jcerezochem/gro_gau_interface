@@ -1,0 +1,136 @@
+Interface to use MM calculations with gromacs in G09 runs
+===========================================================
+Javier Cerezo, October 18, 2017
+
+Description
+------------
+The interface consists of one bash script (gromacs_link.sh)
+that manages the communication between gromcas and gaussian and 
+two utilities (gau2gro and  gro2gau) called by the script to deal 
+with the data preparation so as to exchange the information among
+gromacs and gaussian.
+
+The interface allows one to use a Gromacs calculation as calculation 
+method within G09 through the External keyword. A minimal example 
+route section would be a single point calculation as follows:
+
+# external="gromacs_link.sh -p joyce.new.top"
+
+The External method can be used in single point calculations, force
+and frequency calculation. Optimizations (including constraint 
+optimizations) are also possible. The external method can also be
+used to specify the theoretical method of an ONIOM layer.
+
+
+Installation
+------------
+The two utilities are written in C and Fortran, thus valid compilers
+for such languages are needed (e.g., gcc and gfotran). 
+The compilation can be performed from source/ folder using the simple
+Makefile provided. Concretely typing:
+
+ make                         - Compile the code in /source
+ make install BINDIR=~/bin    - Install the binaries in ~/bin. Any other
+                                path can be specified (but one MUST be 
+                                given)
+ make clean                   - Delete binaries
+
+After compilation, both utilitities and the main bash script should be
+placed on a folder that is in the PATH of your system.
+
+Configuring gromacs setting:
+..........................
+The script should work with versions >= 4.5 but some configuration is
+needed to account for syntax changes in most recent versions.
+The configuration settings are specified in the gromacs_link.sh file
+("GROMACS CONFIGURATION SECTION"). The following variables are set
+gmxcall     - Name of the general gmx caller (in versons >5)
+              Values: "" | gmx | gmx_d | gmx_mpi_d | (other caller names may apply)
+gmxprefix   - sufix for tools (as g_energy in versions <5).
+              Vaules: g_ | ""
+gmxsufix    - sufix depending on compilation options (version <5): 
+              Vaules: _d | _mpi_d | "" | (other suffix may be applicable)
+dumprefix   - prefix for dump program (gmxdump in versions <5)
+              Values: gmx | ""
+addmdpgroup - handles the fact that group scheme is needed, but a new one
+              was introduced in versions >5 and the mdp should be adapted
+              Values: true | false
+
+Example for version >5 compiled with mpi and double precision:
+gmxcall="gmx_mpi_d"
+gmxprefix=""
+gmxsufix=""
+dumprefix=""
+addmdpgroup=true
+
+
+Usage
+------
+The interface is called using the External keyword in the gaussian route
+section:
+
+# JobType External="gromacs_link.sh [options]"
+
+where JobType is the type of run as usual (SP, Opt, Freq...). The interface
+can be called with arguments in the route section, indicated as "-flag value"
+The following options can be specified:
+
+Flag     Ex. Value       Description
+.......................................................
+-p       topol.top       Topology file
+-noclean (no arg)        Do not clean the directory
+                         after the run (i.e., leave
+                         intermediate gromacs files)
+.......................................................
+An additional argument can be given (with no -flag) which
+is interpreted as the name of a paramter file, e.g. parameters.dat  
+
+A topology file is mandatory (if not specified, "topol.top" will be 
+assumed). The optional parameter file specifies more options to tune 
+the calculation, including the use of strucuture files to indicate
+the molecules in the ONIOM layers and the possibility to apply the
+Microiterations algotithm within gromacs (as it is not available within
+G09 with the External keyword). A complete list of options is shown 
+below, in the systax they have in the file:
+
+-- parameters.dat --
+topfile_R         = topol.top       ; Topology of the R layer
+topfile_M         = topol.top       ; Topology of the M layer
+topfile_S         = topol.top       ; Topology of the S layer
+grofile_R         = conf.g96        ; Structure in the R layer
+grofile_M         = conf.g96        ; Structure in the M layer
+grofile_S         = conf.g96        ; Structure in the S layer
+nproc_gmx         = 1               ; integer - number of processors to use in the 
+                                    ; gromacs run (only 1 processor works for the moment)
+save_intermediate = false           ; true/false - controls if intermediate files are saved
+job_type          = SinglePoint     ; SinglePoint/Minim - use minim for Microiterations
+aa2ua_file        = aa2au.dat       ; File with mapping between All-Atoms and United-Atoms
+-- parameters.dat --
+
+
+Notes about the External keyword
+---------------------------------
+The External program cannot be used for geometry optiomizations wit Microiterations (althought 
+ths can be solved letting the external program do such steps). There is however, a more 
+relevant issue that is probably connected to this issue: Gasussian ignores the modredundant
+section (e.g., to perform a constrained minimization) with an External method. To make it use
+the modredundant section, use "Opt(NoMicro)".
+
+
+Examples
+---------
+Here you have some example route sections:
+
+* Single point calculation with MM potential
+# SP External="gromacs_link.sh -p topol.top"
+
+* Optimization and frequencies with MM potential
+# Opt Freq External="gromacs_link.sh -p topol.top"
+
+* Constrained optimization with MM potential
+# Opt(modredundant,nomicro) External="gromacs_link.sh -p topol.top"
+
+* ONIOM calculation, using the MM potential as the low layer:
+# SP ONIOM(B3LYP/6-31G(d):External="gromacs_link.sh parameters.dat")
+(the paremeters.dat file should indicate the topologies of the different layers)
+

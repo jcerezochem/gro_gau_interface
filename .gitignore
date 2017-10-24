@@ -1,0 +1,5 @@
+# Compilation files
+*.o
+gro2gau
+gau2gro
+ddip_nonpolar
