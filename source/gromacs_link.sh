@@ -391,7 +391,7 @@ else
 fi
 # Set if we are giving a geom in gro format or directly use gaussian one
 geomdir=$grofile # if none given, it will be set to use gaussian geom
-natoms_gmx_vis=$(gau2gro ${input##/*/} $layer $trrfile $geomdir $aa2ua_)
+natoms_gmx_vis=$(gau2gro $input $layer $trrfile $geomdir $aa2ua_)
 if (( $? )); then 
     echo "Error in $0 while running gau2gro" >> $msg
     exit 1;
@@ -560,7 +560,7 @@ fi
 #    Get the dipole derivatives from the atomic charges (for non-polarizable FF):
 #                           dmu/dxi = qi
 ddipfile=ddip_${label}.dat
-$gmxcall ${dumprefix}dump$gmxsufix -s topol_${label}.tpr 2> gmx_${label}.log | grep "atom\[" | egrep "q=[ \-]{1}[0-9.e\-]+" -o | sed "s/q=//" > chr_${label}.dat 
+$gmxcall ${dumprefix}dump$gmxsufix -s topol_${label}.tpr 2> gmx_${label}.log | grep "atom\[" | egrep "q=[ \-]{1}[0-9.e+\-]+" -o | sed "s/q=//" > chr_${label}.dat 
 ddip_nonpolar < chr_${label}.dat > $ddipfile
 
 

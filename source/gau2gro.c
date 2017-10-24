@@ -233,7 +233,10 @@ int main(int argc, char *argv[])
     } else {
         natoms_gmx = natoms;
         /* Write a gro file */
-        grofile=remove_ext(gauss_input);
+        /* Extract filename from path (https://stackoverflow.com/a/41949368) */
+        (grofile = strrchr(gauss_input, '/')) ? ++grofile : (grofile = gauss_input);
+        /* The remove extension and add the correct one */
+        grofile=remove_ext(grofile);
         strcat(grofile,"_tmp.gro");
         grout = fopen(grofile,"w");
         fprintf(grout,"Title\n");

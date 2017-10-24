@@ -1,30 +1,31 @@
-Interface to use MM calculations with gromacs in G09 runs
-===========================================================
+Interface to use MM calculations with Gromacs in Gaussian runs
+==============================================================
 Javier Cerezo, jcb1@um.es 
 
 Description
 ------------
 The interface consists of one bash script (gromacs_link.sh)
-that manages the communication between gromcas and gaussian and 
+that manages the communication between Gromacs and Gaussian and 
 three utilities (gau2gro, gro2gau, ddip_nonpolar) called by the 
 script to deal  with the data preparation so as to exchange the 
-information among gromacs and gaussian.
+information among Gromacs and Gaussian.
 
-The interface allows one to use a Gromacs calculation as calculation 
-method within G09 through the External keyword. A minimal example 
-route section would be a single point calculation as follows:
+The interface allows one to use a Gromacs calculation as method 
+within Gaussian (versions G09 and G16 tested) through the External 
+keyword. A minimal example route section would be a single point 
+calculation as follows:
 
 # external="gromacs_link.sh -p topol.top"
 
-The External method can be used in single point calculations, force
-and frequency calculation. Optimizations (including constraint 
-optimizations) are also possible. The external method can also be
-used to specify the theoretical method of an ONIOM layer.
+The External method can be used in single point, force and frequency 
+calculation. Optimizations (including constraint  optimizations) are 
+also possible. The external method can also be used to specify the 
+theoretical method of an ONIOM layer.
 
 
 Third party code
 ----------------
-This project uses code from the xdr library:
+This project uses code from the xdr library (licensed under GPLv3):
 source/xdrfile.c
 source/xdrfile.h
 source/xdrfile_trr.c
@@ -51,7 +52,7 @@ Makefile provided. Concretely typing:
 After compilation, both utilitities and the main bash script should be
 placed on a folder that is in the PATH of your system.
 
-Configuring gromacs setting:
+Configuring Gromacs setting:
 ..........................
 The script should work with versions >= 4.5 but some configuration is
 needed to account for syntax changes in most recent versions.
@@ -65,8 +66,10 @@ gmxsufix    - sufix depending on compilation options (version <5):
               Vaules: _d | _mpi_d | "" | (other suffix may be applicable)
 dumprefix   - prefix for dump program (gmxdump in versions <5)
               Values: gmx | ""
-addmdpgroup - handles the fact that group scheme is needed, but a new one
-              was introduced in versions >5 and the mdp should be adapted
+addmdpgroup - handles the fact that 'group' scheme is needed, but since then
+              introduction of the 'verlet' scheme, one needs to explicitely
+              indicate the scheme through a new mdp option in versions >v5.
+              When this option is needed (>v5), the variable must be true.
               Values: true | false
 
 Example for version >5 compiled with mpi and double precision:
@@ -79,7 +82,7 @@ addmdpgroup=true
 
 Usage
 ------
-The interface is called using the External keyword in the gaussian route
+The interface is called using the External keyword in the Gaussian route
 section:
 
 # JobType External="gromacs_link.sh [options]"
@@ -93,7 +96,7 @@ Flag     Ex. Value       Description
 -p       topol.top       Topology file
 -noclean (no arg)        Do not clean the directory
                          after the run (i.e., leave
-                         intermediate gromacs files)
+                         intermediate Gromacs files)
 .......................................................
 An additional argument can be given (with no -flag) which
 is interpreted as the name of a paramter file, e.g. parameters.dat  
@@ -102,7 +105,7 @@ A topology file is mandatory (if not specified, "topol.top" will be
 assumed). The optional parameter file specifies more options to tune 
 the calculation, including the use of strucuture files to indicate
 the molecules in the ONIOM layers and the possibility to apply the
-Microiterations algotithm within gromacs (as it is not available within
+Microiterations algotithm within Gromacs (as it is not available within
 G09 with the External keyword). A complete list of options is shown 
 below, in the systax they have in the file:
 
@@ -114,7 +117,7 @@ grofile_R         = conf.g96        ; Structure in the R layer
 grofile_M         = conf.g96        ; Structure in the M layer
 grofile_S         = conf.g96        ; Structure in the S layer
 nproc_gmx         = 1               ; integer - number of processors to use in the 
-                                    ; gromacs run (only 1 processor works for the moment)
+                                    ; Gromacs run (only 1 processor works for the moment)
 save_intermediate = false           ; true/false - controls if intermediate files are saved
 job_type          = SinglePoint     ; SinglePoint/Minim - use minim for Microiterations
 aa2ua_file        = aa2au.dat       ; File with mapping between All-Atoms and United-Atoms
@@ -123,11 +126,12 @@ aa2ua_file        = aa2au.dat       ; File with mapping between All-Atoms and Un
 
 Notes about the External keyword
 ---------------------------------
-The External program cannot be used for geometry optiomizations wit Microiterations (althought 
-this can be solved letting the external program do such steps). There is however, a more 
-relevant issue that is probably connected to the above limitaion: Gasussian ignores the 
-modredundant section (e.g., to perform a constrained minimization) with an External method 
-by default. The modredundant section can be used adding "Opt(NoMicro)" to the route section.
+The External program cannot be used for geometry optimizations wit Microiterations 
+(althought this can be solved letting the Gromacs do such steps). There is however, 
+a more relevant issue that is probably connected to the above limitaion: Gasussian 
+ignores the modredundant section (e.g., to perform a constrained minimization) with 
+an External method by default. The modredundant section can be used adding "Opt(NoMicro)" 
+to the route section.
 
 
 Examples
