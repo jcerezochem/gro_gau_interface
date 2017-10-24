@@ -1,14 +1,14 @@
 Interface to use MM calculations with gromacs in G09 runs
 ===========================================================
-Javier Cerezo, October 18, 2017
+Javier Cerezo, jcb1@um.es 
 
 Description
 ------------
 The interface consists of one bash script (gromacs_link.sh)
 that manages the communication between gromcas and gaussian and 
-two utilities (gau2gro and  gro2gau) called by the script to deal 
-with the data preparation so as to exchange the information among
-gromacs and gaussian.
+three utilities (gau2gro, gro2gau, ddip_nonpolar) called by the 
+script to deal  with the data preparation so as to exchange the 
+information among gromacs and gaussian.
 
 The interface allows one to use a Gromacs calculation as calculation 
 method within G09 through the External keyword. A minimal example 
@@ -22,9 +22,22 @@ optimizations) are also possible. The external method can also be
 used to specify the theoretical method of an ONIOM layer.
 
 
+Third party code
+----------------
+This project uses code from the xdr library:
+source/xdrfile.c
+source/xdrfile.h
+source/xdrfile_trr.c
+source/xdrfile_trr.h
+
+The credits, from that project header read:
+ * Copyright (c) Erik Lindahl, David van der Spoel 2003,2004.
+ * Coordinate compression (c) by Frans van Hoesel.
+
+
 Installation
 ------------
-The two utilities are written in C and Fortran, thus valid compilers
+The utilities are written in C and Fortran, thus valid compilers
 for such languages are needed (e.g., gcc and gfotran). 
 The compilation can be performed from source/ folder using the simple
 Makefile provided. Concretely typing:
