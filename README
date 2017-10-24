@@ -14,7 +14,7 @@ The interface allows one to use a Gromacs calculation as calculation
 method within G09 through the External keyword. A minimal example 
 route section would be a single point calculation as follows:
 
-# external="gromacs_link.sh -p joyce.new.top"
+# external="gromacs_link.sh -p topol.top"
 
 The External method can be used in single point calculations, force
 and frequency calculation. Optimizations (including constraint 
@@ -124,10 +124,10 @@ aa2ua_file        = aa2au.dat       ; File with mapping between All-Atoms and Un
 Notes about the External keyword
 ---------------------------------
 The External program cannot be used for geometry optiomizations wit Microiterations (althought 
-ths can be solved letting the external program do such steps). There is however, a more 
-relevant issue that is probably connected to this issue: Gasussian ignores the modredundant
-section (e.g., to perform a constrained minimization) with an External method. To make it use
-the modredundant section, use "Opt(NoMicro)".
+this can be solved letting the external program do such steps). There is however, a more 
+relevant issue that is probably connected to the above limitaion: Gasussian ignores the 
+modredundant section (e.g., to perform a constrained minimization) with an External method 
+by default. The modredundant section can be used adding "Opt(NoMicro)" to the route section.
 
 
 Examples
