@@ -577,7 +577,8 @@ if [ "$Ideriv" -ge "1" ]; then
 
     gradfile="forces_${label}.xvg"
     $gmxcall ${dumprefix}dump$gmxsufix -f $trrfile 2>>gmx_${label}.log 1>>gmx_${label}.log
-    $gmxcall ${dumprefix}dump$gmxsufix -f $trrfile &> forces_${label}_tmp; grep "f\[" forces_${label}_tmp > $gradfile; rm forces_${label}_tmp
+    #$gmxcall ${dumprefix}dump$gmxsufix -f $trrfile &> forces_${label}_tmp; grep "f\[" forces_${label}_tmp > $gradfile; rm forces_${label}_tmp
+    $gmxcall ${dumprefix}dump$gmxsufix -f $trrfile 2>/dev/null | grep "f\[" > $gradfile
 else
     gradfile='NO'
 fi
