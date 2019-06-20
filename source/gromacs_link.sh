@@ -549,7 +549,7 @@ echo "0" | $gmxcall ${gmxprefix}dipoles$gmxsufix -f $trrfile -s topol_${label}.t
 read null mux muy muz null <Mtot_${label}.xvg
 read t E null <energy_and_mu_${label}.xvg
 echo "$t $E $mux $muy $muz" > energy_and_mu_${label}.xvg
-rm dipdist.xvg epsilon.xvg aver.xvg Mtot_${label}.xvg
+rm dipdist.xvg epsilon.xvg aver.xvg Mtot_${label}.xvg 2>/dev/null
 
 read null En dx dy dz <energy_and_mu_${label}.xvg
 cat <<EOF >>$msg
@@ -656,7 +656,7 @@ gro2gau energy_and_mu_${label}.xvg $gradfile $polfile $ddipfile $hessfile $outpu
 if $save_intermediate; then
     echo "Keeping all intermediate files from gromacs run" >> $msg
 else
-    rm *${label}*
+    rm *${label}* 2>/dev/null
 fi
 # Always delete backups
-rm *\# mdout.mdp
+rm *\# mdout.mdp 2>/dev/null
