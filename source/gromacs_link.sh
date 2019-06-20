@@ -57,17 +57,17 @@
 # GROMACS CONFIGURATION SECTION
 #========================================
 # # Version 5.x 
-# gmxcall="gmx_mpi_d"
-# gmxprefix=""
-# gmxsufix=""
-# dumprefix=""
-# addmdpgroup=true
+gmxcall="gmx_d"
+gmxprefix=""
+gmxsufix=""
+dumprefix=""
+addmdpgroup=true
 # Version 4.5.x
-gmxcall=""
-gmxprefix="g_"
-gmxsufix="_d"
-dumprefix="gmx"
-addmdpgroup=false
+# gmxcall=""
+# gmxprefix="g_"
+# gmxsufix="_d"
+# dumprefix="gmx"
+# addmdpgroup=false
 #
 # Only 
 export OMP_NUM_THREADS=1 # mcp gmx has problems if threads and MPI are mixed
@@ -142,82 +142,108 @@ if [ "$parfile" != "none" ]; then
 # GET PARAMETERS FROM PROVIDED FILE 
 
     # Preprocess param to get rid out of commentaries
-    egrep -v "^[\ ]*;" $param > procesed.par
+    egrep -v "^[\ ]*;" $parfile > procesed.par
 
     # Get the parameters if defined
     mdpfile_deff=$(egrep "mdpfile[\ ]*=" procesed.par)
     if [ "x$mdpfile_deff" != "x" ]; then
        mdpfile=${mdpfile_deff##*=} 
        mdpfile=${mdpfile%;*}
+       mdpfile=${mdpfile// /}
+       echo " Read mdpfile: $mdpfile" >> gmx_${label}.log
     fi
     mdpfile_nm_deff=$(egrep "mdpfile_nm[\ ]*=" procesed.par)
     if [ "x$mdpfile_nm_deff" != "x" ]; then
        mdpfile_nm=${mdpfile_nm_deff##*=} 
        mdpfile_nm=${mdpfile_nm%;*}
+       mdpfile_nm=${mdpfile_nm// /}
+       echo " Read mdpfile_nm: $mdpfile_nm" >> gmx_${label}.log
     fi
     mdpfile_min_def=$(egrep "mdpfile_min[\ ]*=" procesed.par)
     if [ "x$mdpfile_min_def" != "x" ]; then
        mdpfile_min=${mdpfile_min_def##*=}
        mdpfile_min=${mdpfile_min%;*}
+       mdpfile_min=${mdpfile_min// /}
+       echo " Read mdpfile_min: $mdpfile_min" >> gmx_${label}.log
     fi
     # If only one layer, we can only define a defauilt top
     topfile_deff=$(egrep "topfile[\ ]*=" procesed.par)
     if [ "x$topfile_deff" != "x" ]; then
         topfile=${topfile_deff##*=}
         topfile=${topfile%;*}
+        topfile=${topfile// /}
+        echo " Read topfile: $topfile" >> gmx_${label}.log
     fi
     topfile_R_deff=$(egrep "topfile_R[\ ]*=" procesed.par)
     if [ "x$topfile_R_deff" != "x" ]; then
         topfile_R=${topfile_R_deff##*=}
         topfile_R=${topfile_R%;*}
+        topfile_R=${topfile_R// /}
+        echo " Read topfile_R: $topfile_R" >> gmx_${label}.log
     fi
     topfile_M_deff=$(egrep "topfile_M[\ ]*=" procesed.par)
     if [ "x$topfile_M_deff" != "x" ]; then
         topfile_M=${topfile_M_deff##*=}
         topfile_M=${topfile_M%;*}
+        topfile_M=${topfile_M// /}
+        echo " Read topfile_M: $topfile_M" >> gmx_${label}.log
     fi
     topfile_S_deff=$(egrep "topfile_S[\ ]*=" procesed.par)
     if [ "x$topfile_S_deff" != "x" ]; then
         topfile_S=${topfile_S_deff##*=}
         topfile_S=${topfile_S%;*}
+        topfile_S=${topfile_S// /}
+        echo " Read topfile_S: $topfile_S" >> gmx_${label}.log
     fi
     grofile_deff=$(egrep "grofile[\ ]*=" procesed.par)
     if [ "x$grofile_deff" != "x" ]; then
         grofile=${grofile_deff##*=}
         grofile=${grofile%;*}
+        grofile=${grofile// /}
+        echo " Read grofile: $grofile" >> gmx_${label}.log
     fi
     grofile_R_deff=$(egrep "grofile_R[\ ]*=" procesed.par)
     if [ "x$grofile_R_deff" != "x" ]; then
         grofile_R=${grofile_R_deff##*=}
         grofile_R=${grofile_R%;*}
+        grofile_R=${grofile_R// /}
+        echo " Read grofile_R: $grofile_R" >> gmx_${label}.log
     fi
     grofile_M_deff=$(egrep "grofile_M[\ ]*=" procesed.par)
     if [ "x$grofile_M_deff" != "x" ]; then
         grofile_M=${grofile_M_deff##*=}
         grofile_M=${grofile_M%;*}
+        grofile_M=${grofile_M// /}
+        echo " Read grofile_M: $grofile_M" >> gmx_${label}.log
     fi
     grofile_S_deff=$(egrep "grofile_S[\ ]*=" procesed.par)
     if [ "x$grofile_S_deff" != "x" ]; then
         grofile_S=${grofile_S_deff##*=}
         grofile_S=${grofile_S%;*}
+        grofile_S=${grofile_S// /}
+        echo " Read grofile_S: $grofile_S" >> gmx_${label}.log
     fi
     save_deff=$(egrep "save_intermediate[\ ]*=" procesed.par)
     if [ "x$save_deff" != "x" ]; then
         save_intermediate=$(echo $save_deff | egrep -i "(true|false)" -o)
+        echo " Read save_intermediate: $save_intermediate" >> gmx_${label}.log
     fi
     nproc_deff=$(egrep "nproc_gmx[\ ]*=" procesed.par)
     if [ "x$nproc_deff" != "x" ]; then
         nproc_gmx=$(echo $nproc_deff | egrep "[0-9]+" -o)
+        echo " Read nproc_gmx: $nproc_gmx" >> gmx_${label}.log
     fi
     aa2ua_def=$(egrep "aa2ua_file[\ ]*=" procesed.par)
     if [ "x$aa2ua_def" != "x" ]; then
         aa2ua=${aa2ua_def##*=}
         aa2ua=${aa2ua%;*}
+        echo " Read aa2ua: $aa2ua" >> gmx_${label}.log
     fi
     job_type_def=$(egrep "job_type[\ ]*=" procesed.par)
     if [ "x$job_type_def" != "x" ]; then
         job_type=${job_type_def##*=}
         job_type=${job_type%;*}
+        echo " Read job_type: $job_type" >> gmx_${label}.log
     fi
 fi
 
@@ -318,6 +344,10 @@ echo " " >> gmx_${label}.log
 echo "gmxMM   grofile_R: $grofile_R" >>$msg
 echo "gmxMM   grofile_M: $grofile_M" >>$msg
 echo "gmxMM   grofile_S: $grofile_S" >>$msg
+echo "gmxMM   topfile_R: $topfile_R" >>$msg
+echo "gmxMM   topfile_M: $topfile_M" >>$msg
+echo "gmxMM   topfile_S: $topfile_S" >>$msg
+echo "gmxMM   layer    : $layer    " >>$msg
 
 # Generate trr files if staring from gromacs formats (gro,g96)
 if [ "$grofile_R" != "gaussian" ]; then
@@ -346,6 +376,7 @@ esac
 
 cat<<EOF >>$msg
 gmxMM  GROMACS PARAMETERS
+gmxMM   parameter file: $parfile
 gmxMM   mdpfile = $mdpfile
 gmxMM   mdpfile_nm = $mdpfile_nm
 gmxMM   mdpfile_min = $mdpfile_min
