@@ -209,7 +209,7 @@ program export_gmx
     dipole=dipole*DEBYE_TO_eBOHR                    ! Debye         --> e * bohr
     grad_gauss=-grad_gauss*KJMOL_TO_HARTREES/NM_TO_BOHR         ! KJ/mol * nm-1 --> Hartree * bohr-1
 !   polarizbility                                   ! NOT AVAILABLE
-    Ddipole=Ddipole*DEBYE_TO_eBOHR/NM_TO_BOHR       ! Debye/nm      --> e
+!   Ddipole=Ddipole                                 ! e             --> e
     hessian=hessian*KJMOL_TO_HARTREES/NM_TO_BOHR**2 ! KJ/mol * nm-2 --> Hartree * bohr-2
 
 
