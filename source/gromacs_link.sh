@@ -92,6 +92,8 @@ nproc_gmx='1'
 aa2ua="NO"
 job_type="SinglePoint"
 parfile="none"
+userpotential="none"
+$userpotential_pairs="none"
 
 ##################################################################################
 # INPUT DATA:
@@ -113,6 +115,8 @@ while (( i<nopts )); do
      -p         ) shift; (( i++ )); topfile=$1       ;;
      -clean     ) save_intermediate=false            ;;
      -noclean   ) save_intermediate=true             ;;
+     -table     ) shift; (( i++ )); userpotential=$1 ;;
+     -tablep    ) shift; (( i++ )); userpotential_pairs=$1 ;;
      *          ) parfile=$1                         ;;
     esac
     shift; (( i++ ))
@@ -255,6 +259,20 @@ if [ "$grofile_R" == "default" ]; then grofile_R=$grofile; fi
 if [ "$grofile_M" == "default" ]; then grofile_M=$grofile; fi
 if [ "$grofile_S" == "default" ]; then grofile_S=$grofile; fi
 
+# User potentential 
+if [ "$userpotential" == "none" ];
+    vdwtype="Cuf-off"
+    table_flag=""
+else
+    vdwtype="user"
+    table_flag="-table $userpotential"
+fi
+if [ "$userpotential_pairs" == "none" ];
+    tablep_flag=""
+else
+    tablep_flag="-tablep $userpotential_pairs"
+fi
+
 ########################################
 # Generate mdp files if needed
 ########################################
@@ -276,7 +294,7 @@ rlist                    = 0.0
 coulombtype              = Cut-off
 rcoulomb                 = 0.0
 
-vdwtype                  = Cut-off
+vdwtype                  = $vdwtype
 rvdw                     = 0.0
 
 EOF
@@ -303,7 +321,7 @@ rlist                    = 0.0
 coulombtype              = Cut-off
 rcoulomb                 = 0.0
 
-vdwtype                  = Cut-off
+vdwtype                  = $vdwtype
 rvdw                     = 0.0
 
 EOF
@@ -330,7 +348,7 @@ rlist                    = 0.0
 coulombtype              = Cut-off
 rcoulomb                 = 0.0
 
-vdwtype                  = Cut-off
+vdwtype                  = $vdwtype
 rvdw                     = 0.0
 
 EOF
@@ -472,7 +490,7 @@ EOF
         exit 1
     fi
     if [ "$nproc_gmx" == "1" ]; then
-        $gmxcall mdrun$gmxsufix  -s topol_${label}.tpr -deffnm minim_${label} -o $trrfile &>>gmx_${label}.log 
+        $gmxcall mdrun$gmxsufix  -s topol_${label}.tpr -deffnm minim_${label} -o $trrfile $table_flag $tablep_flag &>>gmx_${label}.log 
         if (( $? )); then
             echo "=================="
             echo "An ERROR occurred!"
@@ -481,7 +499,7 @@ EOF
             exit 1
         fi
     else
-        mpiexec -np $nproc_gmx $gmxcall mdrun$gmxsufix  -s topol_${label}.tpr -deffnm minim_${label} -o $trrfile &>>gmx_${label}.log
+        mpiexec -np $nproc_gmx $gmxcall mdrun$gmxsufix  -s topol_${label}.tpr -deffnm minim_${label} -o $trrfile $table_flag $tablep_flag &>>gmx_${label}.log
         if (( $? )); then
             echo "=================="
             echo "An ERROR occurred!"
@@ -509,7 +527,7 @@ if (( $? )); then
     exit 1
 fi
 if [ "$nproc_gmx" == "1" ]; then
-    $gmxcall mdrun$gmxsufix -s topol_${label}.tpr -deffnm out_${label} -o $trrfile 2>>gmx_${label}.log 1>>gmx_${label}.log
+    $gmxcall mdrun$gmxsufix -s topol_${label}.tpr -deffnm out_${label} -o $trrfile $table_flag $tablep_flag 2>>gmx_${label}.log 1>>gmx_${label}.log
     if (( $? )); then
         echo "=================="
         echo "An ERROR occurred!"
@@ -518,7 +536,7 @@ if [ "$nproc_gmx" == "1" ]; then
         exit 1
     fi
 else
-    mpiexec -np $nproc_gmx $gmxcall mdrun$gmxsufix -s topol_${label}.tpr -deffnm out_${label} -o $trrfile 2>>gmx_${label}.log 1>>gmx_${label}.log
+    mpiexec -np $nproc_gmx $gmxcall mdrun$gmxsufix -s topol_${label}.tpr -deffnm out_${label} -o $trrfile $table_flag $tablep_flag 2>>gmx_${label}.log 1>>gmx_${label}.log
     if (( $? )); then
         echo "=================="
         echo "An ERROR occurred!"
@@ -616,7 +634,7 @@ if [ "$Ideriv" -eq "2" ]; then
         exit 1
     fi
     if [ "$nproc_gmx" == "1" ]; then
-        $gmxcall mdrun$gmxsufix  -s topol_${label}.tpr -deffnm nm_${label} 2>>gmx_${label}.log 1>>gmx_${label}.log
+        $gmxcall mdrun$gmxsufix  -s topol_${label}.tpr -deffnm nm_${label} $table_flag $tablep_flag 2>>gmx_${label}.log 1>>gmx_${label}.log
         if (( $? )); then
             echo "=================="
             echo "An ERROR occurred!"
@@ -625,7 +643,7 @@ if [ "$Ideriv" -eq "2" ]; then
             exit 1
         fi
     else
-        mpiexec -np $nproc_gmx $gmxcall mdrun$gmxsufix  -s topol_${label}.tpr -deffnm nm_${label}.mtx 2>>gmx_${label}.log 1>>gmx_${label}.log
+        mpiexec -np $nproc_gmx $gmxcall mdrun$gmxsufix  -s topol_${label}.tpr -deffnm nm_${label}.mtx $table_flag $tablep_flag 2>>gmx_${label}.log 1>>gmx_${label}.log
         if (( $? )); then
             echo "=================="
             echo "An ERROR occurred!"
