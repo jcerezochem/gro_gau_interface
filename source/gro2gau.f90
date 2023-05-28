@@ -71,6 +71,8 @@ program export_gmx
               I_ua=14        !Input list for ua<->aa conversion
     ! Stuff to read from command line
     integer :: iargc
+    character(len=100) :: line
+    character :: cnull
 
     ! Input data from argument list
     call getarg(1,gmx_energy_mu)
@@ -117,7 +119,10 @@ program export_gmx
     !2. Forces
     if ( adjustl(gmx_forces) /= 'NO' ) then
         do i=1,natoms_gmx_vis
-            read(I_forc,'(14X,3(2X,G12.5))') grad(1:3,i)
+            read(I_forc,'(A)') line
+            call split_line(line,'{',cnull,line)
+            call split_line(line,'}',line,cnull)
+            read(line,*) grad(1:3,i)
         enddo
         close(I_forc)
     endif
@@ -265,6 +270,38 @@ program export_gmx
     close(O_msg)
 
     stop
+    
+    contains
+    
+    subroutine split_line(line,splitter,line_a,line_b)
+
+        !Split a line from a given marker. If it is not present, it does not
+        !split the line (the whole is preserved in line_a
+
+        character(len=*),intent(in):: line,splitter
+        character(len=*),intent(out):: line_a,line_b
+
+        !local
+        integer :: i,j
+        !Auxiliar helps when line(input) is also one 
+        !of the outputs, line_a or line_b
+        character(len=(len(line_a))) :: aux_line_a
+
+        i=INDEX(line,splitter)
+        if ( i == 0 ) then
+            line_a=line
+            line_b=""
+            return
+        endif
+        j=len_trim(splitter)
+        
+        aux_line_a=line(1:i-1)
+        line_b=line(i+j:)
+        line_a=aux_line_a
+
+        return
+
+    end subroutine split_line
 
 end program export_gmx
 

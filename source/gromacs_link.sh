@@ -4,10 +4,10 @@
 #
 ##################################################################################
 # DESCRIPTION
-# Interface g09-gromacs thruogh external kewword (in g09/g16)
+# Interface gaussian-gromacs thruogh external kewword (in g09/g16)
 # to be used as any other method.
-# Gromacs (MM) can provide Energy, Dipole, Gradients and Hessian. 
-# But not polarizability and dipole derivative
+# Gromacs (MM) can provide Energy, Dipole, Gradients and Hessian 
+# and dipole derivatives (charges). But not polarizability
 #
 # G09 passes the coordinates to gromacs through an ASCII
 # file. First this file is read and a trr is generated (no
