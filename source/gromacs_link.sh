@@ -610,7 +610,18 @@ fi
 #    Get the dipole derivatives from the atomic charges (for non-polarizable FF):
 #                           dmu/dxi = qi
 ddipfile=ddip_${label}.dat
-$gmxcall ${dumprefix}dump$gmxsufix -s topol_${label}.tpr 2> gmx_${label}.log | grep "atom\[" | egrep "q=[ \-]{1}[0-9.e+\-]+" -o | sed "s/q=//" > chr_${label}.dat 
+# Charge per atom in molecule
+$gmxcall ${dumprefix}dump$gmxsufix -s topol_${label}.tpr 2> gmx_${label}.log | grep "atom\[" | egrep "q=[ \-]{1}[0-9.e+\-]+" -o | sed "s/q=//" > chratmol_${label}.dat 
+# Numer of molecules
+$gmxcall ${dumprefix}dump$gmxsufix -s topol_${label}.tpr 2> gmx_${label}.log | egrep "#molecules" | egrep "[0-9]+" -o > nmol_${label}.dat 
+# Numer of atoms/molecules
+$gmxcall ${dumprefix}dump$gmxsufix -s topol_${label}.tpr 2> gmx_${label}.log | egrep "#atoms_mol" | egrep "[0-9]+" -o > natmol_${label}.dat 
+# Combile all info to generate charge list
+nmol=$(cat nmol_${label}.dat)
+for (( i=1; i<=$nmol; i++ )); do
+    cat chratmol_${label}.dat
+done> chr_${label}.dat
+# And generate ddipole
 ddip_nonpolar < chr_${label}.dat > $ddipfile
 
 

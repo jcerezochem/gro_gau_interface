@@ -214,7 +214,7 @@ program export_gmx
     dipole=dipole*DEBYE_TO_eBOHR                    ! Debye         --> e * bohr
     grad_gauss=-grad_gauss*KJMOL_TO_HARTREES/NM_TO_BOHR         ! KJ/mol * nm-1 --> Hartree * bohr-1
 !   polarizbility                                   ! NOT AVAILABLE
-!   Ddipole                                         ! NOT AVAILABLE
+!   Ddipole=Ddipole                                 ! e             --> e
     hessian=hessian*KJMOL_TO_HARTREES/NM_TO_BOHR**2 ! KJ/mol * nm-2 --> Hartree * bohr-2
 
 
@@ -250,6 +250,8 @@ program export_gmx
 
     !4. Hessian
     if ( gmx_hessian /= 'NO' ) then
+        write(O_msg,'(/,A)') 'gmxMM  Writting the Hessian'
+        write(O_msg,'(A,2(G10.3),/)') 'gmxMM  First and second elements: ', hessian(1), hessian(2)
 !    *****************************************************************************
 !    GAUSSIAN HELP (http://www.gaussian.com/g_tech/g_ur/k_external.htm)
 !    Pseudocode: FFX(I), I=1,(3*NAtoms*(3*NAtoms+1))/2
