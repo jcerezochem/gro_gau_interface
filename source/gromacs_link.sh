@@ -93,7 +93,7 @@ aa2ua="NO"
 job_type="SinglePoint"
 parfile="none"
 userpotential="none"
-$userpotential_pairs="none"
+userpotential_pairs="none"
 
 ##################################################################################
 # INPUT DATA:
@@ -260,14 +260,14 @@ if [ "$grofile_M" == "default" ]; then grofile_M=$grofile; fi
 if [ "$grofile_S" == "default" ]; then grofile_S=$grofile; fi
 
 # User potentential 
-if [ "$userpotential" == "none" ];
-    vdwtype="Cuf-off"
+if [ "$userpotential" == "none" ]; then
+    vdwtype="Cut-off"
     table_flag=""
 else
     vdwtype="user"
     table_flag="-table $userpotential"
 fi
-if [ "$userpotential_pairs" == "none" ];
+if [ "$userpotential_pairs" == "none" ]; then
     tablep_flag=""
 else
     tablep_flag="-tablep $userpotential_pairs"
