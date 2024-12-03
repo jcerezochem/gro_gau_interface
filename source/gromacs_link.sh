@@ -56,12 +56,18 @@
 #========================================
 # GROMACS CONFIGURATION SECTION
 #========================================
-# # Version 5.x 
-gmxcall="gmx_d"
-gmxprefix=""
+# joycetools
+gmxcall=""
+gmxprefix="g_"
 gmxsufix=""
-dumprefix=""
-addmdpgroup=true
+dumprefix="gmx"
+addmdpgroup=false
+# Version 5.x 
+# gmxcall="gmx_d"
+# gmxprefix=""
+# gmxsufix=""
+# dumprefix=""
+# addmdpgroup=true
 # Version 4.5.x
 # gmxcall=""
 # gmxprefix="g_"
